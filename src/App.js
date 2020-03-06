@@ -1,48 +1,31 @@
-import React from "react";
-import SearchForm from "./components/SearchForm";
-
+import React, { useEffect, useState } from "react";
+import { ApolloClient, ApolloLink, InMemoryCache, HttpLink } from 'apollo-boost';
+import { gql } from "apollo-boost";
 
 function App() {
+  const [repo, setRepo] = useState({})
+
   console.log("app loaded");
+
+  useEffect(() =>{
+ 
+    // fetch("BookApiUrl")
+    //   .then(res => res.json())
+    //   .then(setBook)
+ 
+  }, [])
+
   return (
-    <div>
+    <div className="main">
       <h1 className="title">Search for a repo on Github</h1>
-      <SearchForm />
+      <form className="search-form">
+        <input type="text" name="repo" placeholder="repo" />
+        <input type="text" name="oauth" placeholder="oauth" />
+        <button type="submit">Search</button>
+      </form>
     </div>
   );
 }
 
 export default App;
 
-
-
-// {
-//   repository(owner: "nuwave", name: "lighthouse") {
-//     description
-//     url
-//     pullRequests(states: [OPEN, CLOSED], first: 20) {
-//       totalCount
-//       nodes{
-//         title
-//         state
-//         body
-//         createdAt
-//       }
-//     }
-//     issues(states: [OPEN, CLOSED], first: 20) {
-//       totalCount
-//       nodes {
-//         title
-//         state
-//         url
-//         comments(first: 20) {
-//           nodes {
-//             url
-//             body
-//             createdAt
-//           }
-//         }
-//       }
-//     }
-//   }
-// }
