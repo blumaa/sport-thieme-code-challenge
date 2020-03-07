@@ -53,3 +53,7 @@ h1 {
   background-color: darkslategray;
   border-radius: 20%;
 }
+
+.panel {
+  width: 100%;
+}

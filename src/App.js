@@ -6,11 +6,13 @@ import {
   HttpLink
 } from "apollo-boost";
 import { gql } from "apollo-boost";
+import { Tab, Button, Input, Header } from "semantic-ui-react";
+import RepoPanel from "./components/RepoPanel"
 
 const API_KEY = process.env.REACT_APP_API_KEY;
 
 function App() {
-  const [repo, setRepo] = useState({});
+  const [repo, setRepo] = useState([]);
   const [ownerRepo, setOwnerRepo] = useState("");
   const [oauth, setOauth] = useState("");
 
@@ -54,25 +56,31 @@ function App() {
             resetAt
           }
           repository(owner: $owner, name: $name) {
+            nameWithOwner
             description
             url
             pullRequests(states: [OPEN, CLOSED], first: 20) {
               totalCount
               nodes {
+                id
                 title
                 state
                 body
                 createdAt
               }
             }
-            issues(states: [OPEN, CLOSED], first: 20) {
+            issues(states: [OPEN, CLOSED], first: 100) {
               totalCount
               nodes {
+                id
                 title
+                body
                 state
                 url
+                createdAt
                 comments(first: 20) {
                   nodes {
+                    id
                     url
                     body
                     createdAt
@@ -93,14 +101,29 @@ function App() {
         })
         .then(result => {
           console.log(result);
-          setRepo(result);
+          setRepo([result]);
         });
     } catch (error) {
       console.log(error);
     }
   };
 
-  console.log(repo);
+  const panes = [
+    {
+      menuItem: "Pull Requests",
+      render: () => <Tab.Pane>Pull Requests</Tab.Pane>
+    },
+    {
+      menuItem: "Open Issues",
+      render: () => <Tab.Pane>Open Issues</Tab.Pane>
+    },
+    {
+      menuItem: "Closed Issues",
+      render: () => <Tab.Pane>Closed Issues</Tab.Pane>
+    }
+  ];
+
+  console.log(repo.length);
   return (
     <div className="main">
       <h1 className="title">Search for a repo on Github</h1>
@@ -110,7 +133,7 @@ function App() {
           handleSubmit(e);
         }}
       >
-        <input
+        <Input
           className="form-elements"
           type="text"
           name="repo"
@@ -118,7 +141,7 @@ function App() {
           value={ownerRepo}
           onChange={e => setOwnerRepo(e.target.value)}
         />
-        <input
+        <Input
           className="form-elements"
           type="text"
           name="oauth"
@@ -126,10 +149,12 @@ function App() {
           value={oauth}
           onChange={e => setOauth(e.target.value)}
         />
-        <button id="form-submit-button" type="submit">
-          Search
-        </button>
+        <Button type="submit">Search</Button>
       </form>
+      <div className="panel">
+        {repo.length > 0 ? <RepoPanel repo={repo ? repo : null} /> : <div>Use the form to search for a repo</div>}
+        
+      </div>
     </div>
   );
 }
