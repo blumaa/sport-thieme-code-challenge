@@ -7,26 +7,30 @@ import {
 } from "apollo-boost";
 import { gql } from "apollo-boost";
 
-
 const API_KEY = process.env.REACT_APP_API_KEY;
 
-console.log(API_KEY)
 function App() {
   const [repo, setRepo] = useState({});
+  const [ownerRepo, setOwnerRepo] = useState("");
+  const [oauth, setOauth] = useState("");
 
   console.log("app loaded");
 
-  useEffect(() => {
+  const handleSubmit = e => {
+    e.preventDefault();
+    console.log(e.target);
+    console.log(ownerRepo);
+    console.log(oauth);
     const httpLink = new HttpLink({ uri: "https://api.github.com/graphql" });
 
     const authLink = new ApolloLink((operation, forward) => {
       // Retrieve the authorization token from local storage.
-      const token = API_KEY;
+      const token = { oauth };
 
       // Use the setContext method to set the HTTP headers.
       operation.setContext({
         headers: {
-          authorization: token ? `Bearer ${token}` : ""
+          authorization: token ? `Bearer ${oauth}` : ""
         }
       });
 
@@ -39,65 +43,92 @@ function App() {
       cache: new InMemoryCache()
     });
 
+    const owner = ownerRepo.split("/")[0];
+    console.log(owner);
     try {
-      client
-      .query({
-        query: gql`
-          {
-            repository(owner: "nuwave", name: "lighthouse") {
-              description
-              url
-              pullRequests(states: [OPEN, CLOSED], first: 20) {
-                totalCount
-                nodes {
-                  title
-                  state
-                  body
-                  createdAt
-                }
+      const query = gql`
+        query GET_REPO($owner: String!, $name: String!) {
+          rateLimit {
+            cost
+            remaining
+            resetAt
+          }
+          repository(owner: $owner, name: $name) {
+            description
+            url
+            pullRequests(states: [OPEN, CLOSED], first: 20) {
+              totalCount
+              nodes {
+                title
+                state
+                body
+                createdAt
               }
-              issues(states: [OPEN, CLOSED], first: 20) {
-                totalCount
-                nodes {
-                  title
-                  state
-                  url
-                  comments(first: 20) {
-                    nodes {
-                      url
-                      body
-                      createdAt
-                    }
+            }
+            issues(states: [OPEN, CLOSED], first: 20) {
+              totalCount
+              nodes {
+                title
+                state
+                url
+                comments(first: 20) {
+                  nodes {
+                    url
+                    body
+                    createdAt
                   }
                 }
               }
             }
           }
-        `
-      })
-      .then(result => {
-        console.log(result)
-        setRepo(result)
-      });
+        }
+      `;
+      client
+        .query({
+          query: query,
+          variables: {
+            owner: `${ownerRepo.split("/")[0]}`,
+            name: `${ownerRepo.split("/")[1]}`
+          }
+        })
+        .then(result => {
+          console.log(result);
+          setRepo(result);
+        });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-    
+  };
 
-    // fetch("BookApiUrl")
-    //   .then(res => res.json())
-    //   .then(setBook)
-  }, []);
-
-
-  console.log(repo)
+  console.log(repo);
   return (
     <div className="main">
       <h1 className="title">Search for a repo on Github</h1>
-      <form className="search-form">
-        <input type="text" name="repo" placeholder="repo" />
-        <input type="text" name="oauth" placeholder="oauth" />
-        <button type="submit">Search</button>
+      <form
+        className="search-form"
+        onSubmit={e => {
+          handleSubmit(e);
+        }}
+      >
+        <input
+          className="form-elements"
+          type="text"
+          name="repo"
+          placeholder="owner/repo"
+          value={ownerRepo}
+          onChange={e => setOwnerRepo(e.target.value)}
+        />
+        <input
+          className="form-elements"
+          type="text"
+          name="oauth"
+          placeholder="oauth"
+          value={oauth}
+          onChange={e => setOauth(e.target.value)}
+        />
+        <button id="form-submit-button" type="submit">
+          Search
+        </button>
       </form>
     </div>
   );

@@ -41,3 +41,15 @@ h1 {
   margin: 2px;
   border: 1px solid gray;
 }
+
+.form-elements {
+  border-radius: 5px;
+  margin: 5px;
+  padding: 5px;
+}
+
+#form-submit-button {
+  color: white;
+  background-color: darkslategray;
+  border-radius: 20%;
+}
