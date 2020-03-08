@@ -1,35 +1,44 @@
-import _ from 'lodash'
-import React from 'react'
-import { Button, Header, Icon, Image, Modal } from 'semantic-ui-react'
+import React, { useState } from "react";
+import { Card, List } from "semantic-ui-react";
 
-const IssueDetails = () => (
-  <Modal trigger={<Button>Scrolling Content Modal</Button>}>
-    <Modal.Header>Profile Picture</Modal.Header>
-    <Modal.Content image scrolling>
-      <Image size='medium' src='https://react.semantic-ui.com/images/wireframe/image.png' wrapped />
+const IssueDetails = ({ iss }) => {
+  const [issue, setIssue] = useState(iss);
+  console.log(issue);
 
-      <Modal.Description>
-        <Header>Modal Header</Header>
-        <p>
-          This is an example of expanded content that will cause the modal's
-          dimmer to scroll
-        </p>
+  let filteredComments = issue.comments.nodes.map(comment => {
+    return (<List.Item key={comment.id}>
+        <List.Content>
+            <List.Description>{comment.body}</List.Description>
+            <List.Description>{comment.createdAt}</List.Description>
+        </List.Content>
+    </List.Item>);
+  });
 
-        {_.times(8, (i) => (
-          <Image
-            key={i}
-            src='https://react.semantic-ui.com/images/wireframe/paragraph.png'
-            style={{ paddingBottom: 5 }}
+  const filterComments = e => {
+    console.log(e.target.value);
+  };
+
+  return (
+    <>
+      <Card>
+        <Card.Content>
+          <Card.Header>{iss.title}</Card.Header>
+          <Card.Meta>{iss.createdAt}</Card.Meta>
+          <Card.Description>{iss.body}</Card.Description>
+          <Card.Description>{iss.state}</Card.Description>
+        </Card.Content>
+        <Card.Content>
+          <Card.Header>Comments</Card.Header>
+          <input
+            type="text"
+            onChange={filterComments}
+            placeholder="filter search"
           />
-        ))}
-      </Modal.Description>
-    </Modal.Content>
-    <Modal.Actions>
-      <Button primary>
-        Proceed <Icon name='chevron right' />
-      </Button>
-    </Modal.Actions>
-  </Modal>
-)
+          <List>{filteredComments}</List>
+        </Card.Content>
+      </Card>
+    </>
+  );
+};
 
-export default IssueDetails
+export default IssueDetails;
