@@ -5,12 +5,11 @@ import OpenIssuesDisplay from "./OpenIssuesDisplay";
 import ClosedIssuesDisplay from "./ClosedIssuesDisplay";
 
 const RepoPanel = ({ repo, loading }) => {
-    console.log(repo)
-  console.log(loading);
+ 
   if (repo.length < 1 && loading === false) {
-      return <div>Use the form to search for a repo</div>
+    return <div>Use the form to search for a repo</div>;
   } else if (loading) {
-    return <div>loading datas</div>;
+    return <div>loading data</div>;
   } else {
     const { repository } = repo[0].data;
 
@@ -40,8 +39,6 @@ const RepoPanel = ({ repo, loading }) => {
         )
       }
     ];
-
-    console.log(repo);
 
 
     return (

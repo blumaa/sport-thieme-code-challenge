@@ -1,16 +1,14 @@
 import React from "react";
-import {  Card, Modal } from "semantic-ui-react";
+import { Card, Modal } from "semantic-ui-react";
 import IssueDetails from "./IssueDetails";
 
 const OpenIssuesDisplay = ({ repository }) => {
- 
   // console.log('pull req repo', repository)
   const filteredRepos = repository.issues.nodes.filter(
     node => node.state === "CLOSED"
   );
   // console.log(filteredRepos)
   const issues = filteredRepos.map(iss => {
-    console.log(iss);
     return (
       <Modal
         key={iss.id}

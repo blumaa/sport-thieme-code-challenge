@@ -6,7 +6,7 @@ import {
   HttpLink
 } from "apollo-boost";
 import { gql } from "apollo-boost";
-import {  Button, Input } from "semantic-ui-react";
+import { Button, Input } from "semantic-ui-react";
 import RepoPanel from "./components/RepoPanel";
 
 function App() {
@@ -103,9 +103,8 @@ function App() {
     } catch (error) {
       console.log(error);
     }
-    setLoading(false)
+    setLoading(false);
   }
-
 
   // console.log(repo);
   // console.log("loading", loading);
@@ -137,7 +136,7 @@ function App() {
         <Button type="submit">Search</Button>
       </form>
       <div className="panel">
-          <RepoPanel repo={repo} loading={loading} />
+        <RepoPanel repo={repo} loading={loading} />
       </div>
     </div>
   );
