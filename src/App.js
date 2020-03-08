@@ -7,7 +7,7 @@ import {
 } from "apollo-boost";
 import { gql } from "apollo-boost";
 import { Tab, Button, Input, Header } from "semantic-ui-react";
-import RepoPanel from "./components/RepoPanel"
+import RepoPanel from "./components/RepoPanel";
 
 const API_KEY = process.env.REACT_APP_API_KEY;
 
@@ -15,39 +15,39 @@ function App() {
   const [repo, setRepo] = useState([]);
   const [ownerRepo, setOwnerRepo] = useState("");
   const [oauth, setOauth] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  console.log("app loaded");
+  // console.log("app loaded");
 
-  const handleSubmit = e => {
+  async function handleSubmit(e) {
     e.preventDefault();
-    console.log(e.target);
-    console.log(ownerRepo);
-    console.log(oauth);
-    const httpLink = new HttpLink({ uri: "https://api.github.com/graphql" });
+    setLoading(true);
+    try {
+      // console.log(e.target);
+      // console.log(ownerRepo);
+      // console.log(oauth);
+      const httpLink = new HttpLink({ uri: "https://api.github.com/graphql" });
 
-    const authLink = new ApolloLink((operation, forward) => {
-      // Retrieve the authorization token from local storage.
-      const token = { oauth };
+      const authLink = new ApolloLink((operation, forward) => {
+        // Retrieve the authorization token from local storage.
+        const token = { oauth };
 
-      // Use the setContext method to set the HTTP headers.
-      operation.setContext({
-        headers: {
-          authorization: token ? `Bearer ${oauth}` : ""
-        }
+        // Use the setContext method to set the HTTP headers.
+        operation.setContext({
+          headers: {
+            authorization: token ? `Bearer ${oauth}` : ""
+          }
+        });
+
+        // Call the next link in the middleware chain.
+        return forward(operation);
       });
 
-      // Call the next link in the middleware chain.
-      return forward(operation);
-    });
+      const client = new ApolloClient({
+        link: authLink.concat(httpLink), // Chain it with the HttpLink
+        cache: new InMemoryCache()
+      });
 
-    const client = new ApolloClient({
-      link: authLink.concat(httpLink), // Chain it with the HttpLink
-      cache: new InMemoryCache()
-    });
-
-    const owner = ownerRepo.split("/")[0];
-    console.log(owner);
-    try {
       const query = gql`
         query GET_REPO($owner: String!, $name: String!) {
           rateLimit {
@@ -91,39 +91,26 @@ function App() {
           }
         }
       `;
-      client
-        .query({
-          query: query,
-          variables: {
-            owner: `${ownerRepo.split("/")[0]}`,
-            name: `${ownerRepo.split("/")[1]}`
-          }
-        })
-        .then(result => {
-          console.log(result);
-          setRepo([result]);
-        });
+
+      let res = await client.query({
+        query: query,
+        variables: {
+          owner: `${ownerRepo.split("/")[0]}`,
+          name: `${ownerRepo.split("/")[1]}`
+        }
+      });
+      // console.log(res);
+
+      setRepo([res]);
     } catch (error) {
       console.log(error);
     }
-  };
+    setLoading(false)
+  }
 
-  const panes = [
-    {
-      menuItem: "Pull Requests",
-      render: () => <Tab.Pane>Pull Requests</Tab.Pane>
-    },
-    {
-      menuItem: "Open Issues",
-      render: () => <Tab.Pane>Open Issues</Tab.Pane>
-    },
-    {
-      menuItem: "Closed Issues",
-      render: () => <Tab.Pane>Closed Issues</Tab.Pane>
-    }
-  ];
 
-  console.log(repo.length);
+  // console.log(repo);
+  // console.log("loading", loading);
   return (
     <div className="main">
       <h1 className="title">Search for a repo on Github</h1>
@@ -152,8 +139,7 @@ function App() {
         <Button type="submit">Search</Button>
       </form>
       <div className="panel">
-        {repo.length > 0 ? <RepoPanel repo={repo ? repo : null} /> : <div>Use the form to search for a repo</div>}
-        
+          <RepoPanel repo={repo} loading={loading} />
       </div>
     </div>
   );
