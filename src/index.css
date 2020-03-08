@@ -57,3 +57,13 @@ h1 {
 .panel {
   width: 100%;
 }
+
+.issue-card {
+  width: 100%;
+  background-color: red;
+}
+
+.ui.modal {
+  width: 100%;
+  background-color: red;
+}
