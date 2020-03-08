@@ -1,5 +1,5 @@
 import React from "react";
-import { Tab, Button, Input, Header } from "semantic-ui-react";
+import { Tab, Header } from "semantic-ui-react";
 import PullRequestDisplay from "./PullRequestDisplay";
 import OpenIssuesDisplay from "./OpenIssuesDisplay";
 import ClosedIssuesDisplay from "./ClosedIssuesDisplay";

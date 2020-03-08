@@ -1,12 +1,9 @@
 import React from "react";
-import { Header, Card, Modal, Button, Icon } from "semantic-ui-react";
+import { Card, Modal } from "semantic-ui-react";
 import IssueDetails from "./IssueDetails";
 
 const OpenIssuesDisplay = ({ repository }) => {
-  const issDetails = iss => {
-    console.log("issue details", iss);
-  };
-
+  
   // console.log('pull req repo', repository)
   const filteredRepos = repository.issues.nodes.filter(
     node => node.state === "OPEN"

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   ApolloClient,
   ApolloLink,
@@ -6,10 +6,8 @@ import {
   HttpLink
 } from "apollo-boost";
 import { gql } from "apollo-boost";
-import { Tab, Button, Input, Header } from "semantic-ui-react";
+import {  Button, Input } from "semantic-ui-react";
 import RepoPanel from "./components/RepoPanel";
-
-const API_KEY = process.env.REACT_APP_API_KEY;
 
 function App() {
   const [repo, setRepo] = useState([]);
